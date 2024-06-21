@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChatGPT Interface</title>
+    <!-- ... -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style> body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f8f9fa;
+    }
+    .chat-container {
+      width: 100%;
+      max-width: 900px;
+      background: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .chat-header {
+      background: #007bff;
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .chat-body {
+      height: 400px;
+      overflow-y: auto;
+      padding: 15px;
+    }
+    .chat-input {
+      padding: 15px;
+      border-top: 1px solid #ddd;
+    }
+    .chat-message {
+      margin-bottom: 15px;
+    }
+    .chat-message.user {
+      text-align: right;
+    }
+    .chat-message.bot {
+      text-align: left;
+    }
+    .chat-message .message-content {
+      display: inline-block;
+      padding: 10px 15px;
+      border-radius: 20px;
+    }
+    .chat-message.user .message-content {
+      background: #007bff;
+      color: white;
+    }
+    .chat-message.bot .message-content {
+      background: #f1f1f1;
+      color: #333;
+    }
+    .chat-history {
+      height: 100%;
+      border-right: 1px solid #ddd;
+      overflow-y: auto;
+      padding: 15px;
+    }
+    .chat-history-item {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      cursor: pointer;
+    }
+    .chat-history-item:hover {
+      background: #f1f1f1;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container row no-gutters">
+    <div class="col-4 chat-history">
+      <!-- Chat history items will be appended here -->
+      <div class="chat-history-item">Chat 1</div>
+      <div class="chat-history-item">Chat 2</div>
+      <div class="chat-history-item">Chat 3</div>
+    </div>
+    <div class="col-8">
+      <div class="chat-header">
+        ChatGPT Interface
+        <div class="dropdown">
+          <button class="btn btn-secondary dropdown-toggle" type="button" id="userMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            User Name
+          </button>
+          <div class="dropdown-menu" aria-labelledby="userMenu">
+            <a class="dropdown-item" href="#">Edit</a>
+            <a class="dropdown-item" href="#">Log out</a>
+          </div>
+        </div>
+      </div>
+      <div class="chat-body" id="chat-body">
+        <!-- Chat messages will be appended here -->
+      </div>
+      <div class="chat-input">
+        <div class="input-group">
+          <input type="text" id="chat-input" class="form-control" placeholder="Type a message..." aria-label="Type a message">
+          <div class="input-group-append">
+            <button class="btn btn-primary" type="button" id="send-button">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Include jQuery and Bootstrap JavaScript -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  
+  <script>
+$(document).ready(function() {
+    // Sample data for conversations
+    var conversations = [
+        { id: 1, name: "John Doe" },
+        { id: 2, name: "Jane Smith" },
+        { id: 3, name: "Alice Johnson" },
+        // More conversations
+    ];
+ 
+    // Load conversations into the sidebar
+    var conversationList = $('#conversationList');
+    conversations.forEach(function(convo) {
+        var listItem = $('<li class="list-group-item" data-id="' + convo.id + '">' + convo.name + '</li>');
+        listItem.click(function() {
+            loadConversation(convo.id);
+        });
+        conversationList.append(listItem);
+    });
+ 
+    // Function to load a conversation
+    function loadConversation(convoId) {
+        $('#chatHeader').text('Conversation with ' + conversations.find(c => c.id === convoId).name);
+        $('#chatMessages').empty(); // Clear previous messages
+ 
+        // Fetch messages for the selected conversation (dummy messages for illustration)
+        var messages = [
+            { sender: 'user', text: 'Hello' },
+            { sender: 'recipient', text: 'Hi there!' }
+            // More messages
+        ];
+ 
+        // Display messages
+        messages.forEach(function(msg) {
+            var messageItem = $('<div class="' + (msg.sender === 'user' ? 'text-right' : 'text-left') + '">' + marked(msg.text) + '</div>');
+            $('#chatMessages').append(messageItem);
+        });
+    }
+ 
+    // Send message functionality
+    $('#btnQuery').click(function() {
+        var message = $('#txtQuery').val();
+        if (message.trim() !== "") {
+            var messageItem = $('<div class="text-right">' + marked(message) + '</div>');
+            $('#chatMessages').append(messageItem);
+            $('#txtQuery').val(''); // Clear the input field
+ 
+            // Add your AJAX call here to send the message to the server
+        }
+    });
+ 
+    // Initialize the dropdown component
+    $('.dropdown-toggle').dropdown();
+});
+
+
+$(document).ready(function() {
+    // Sample data for conversations
+    var conversations = [
+        { id: 1, name: "John Doe" },
+        { id: 2, name: "Jane Smith" },
+        { id: 3, name: "Alice Johnson" },
+        // More conversations
+    ];
+ 
+    // Load conversations into the sidebar
+    var conversationList = $('#conversationList');
+    conversations.forEach(function(convo) {
+        var listItem = $('<li class="list-group-item" data-id="' + convo.id + '">' + convo.name + '</li>');
+        listItem.click(function() {
+            loadConversation(convo.id);
+        });
+        conversationList.append(listItem);
+    });
+ 
+    // Function to load a conversation
+    function loadConversation(convoId) {
+        $('#chatHeader').text('Conversation with ' + conversations.find(c => c.id === convoId).name);
+        $('#chatMessages').empty(); // Clear previous messages
+ 
+        // Fetch messages for the selected conversation (dummy messages for illustration)
+        var messages = [
+            { sender: 'user', text: 'Hello' },
+            { sender: 'recipient', text: 'Hi there!' }
+            // More messages
+        ];
+ 
+        // Display messages
+        messages.forEach(function(msg) {
+            var messageItem = $('<div class="' + (msg.sender === 'user' ? 'text-right' : 'text-left') + '">' + marked(msg.text) + '</div>');
+            $('#chatMessages').append(messageItem);
+        });
+    }
+ 
+    // Send message functionality
+    $('#btnQuery').click(function() {
+        var message = $('#txtQuery').val();
+        if (message.trim() !== "") {
+            var messageItem = $('<div class="text-right">' + marked(message) + '</div>');
+            $('#chatMessages').append(messageItem);
+            $('#txtQuery').val(''); // Clear the input field
+ 
+            // Add your AJAX call here to send the message to the server
+        }
+    });
+ 
+    // Initialize the dropdown component
+    $('.dropdown-toggle').dropdown();
+});
+
+  </script>
+</body>
+</html>
